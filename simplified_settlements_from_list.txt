@@ -1,0 +1,5 @@
+Simplified Settlement Recommendations (with Manual Direct Expenses):
+From (Debtor) To (Creditor)  Amount
+        Bergi          Nils      35
+       Adrien          Nils      10
+       Adrien         Jason       5

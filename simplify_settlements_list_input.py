@@ -1,9 +1,14 @@
 import pandas as pd
 
-def simplify_settlements(file_path="Team_Expense_Split_Final.xlsx"):
+def simplify_settlements(file_path="Team_Expense_Split_Complete.xlsx", direct_expenses=[]):
     # Read net balances from the Balances sheet
     df = pd.read_excel(file_path, sheet_name='Balances')
     balances = dict(zip(df['Member'], df['Net Balance'].round(2)))
+
+    # Adjust balances using the manually provided direct expenses
+    for payer, receiver, amount in direct_expenses:
+        balances[payer] -= amount
+        balances[receiver] += amount
 
     debtors = [(m, -amt) for m, amt in balances.items() if amt < 0]
     creditors = [(m, amt) for m, amt in balances.items() if amt > 0]
@@ -26,11 +31,15 @@ def simplify_settlements(file_path="Team_Expense_Split_Final.xlsx"):
             j += 1
 
     df_transactions = pd.DataFrame(transactions, columns=["From (Debtor)", "To (Creditor)", "Amount"])
-    print("\nSimplified Settlement Recommendations:")
+    print("\nSimplified Settlement Recommendations (with Manual Direct Expenses):")
     print(df_transactions.to_string(index=False))
 
-    return df_transactions
+    with open("simplified_settlements_from_list.txt", "w") as f:
+        f.write("Simplified Settlement Recommendations (with Manual Direct Expenses):\n")
+        f.write(df_transactions.to_string(index=False))
 
-# Run the script
+# Example usage:
 if __name__ == "__main__":
-    simplify_settlements("Team_Expense_Split_Final.xlsx")
+    direct_expenses = [
+    ]
+    simplify_settlements("Team_Expense_Split_Complete.xlsx", direct_expenses)
